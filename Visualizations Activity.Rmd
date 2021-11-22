@@ -1,0 +1,66 @@
+---
+title: "Visualizations Activity"
+author: "Christopher Spann"
+date: "11/21/2021"
+fontsize: 12pt
+output: 
+  html_document:
+   theme:
+      bootswatch: darkly
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+```{r, include = FALSE}
+#This next chunk is to read the data into R.
+```
+
+```{r, include = FALSE}
+library(readr)
+library(dplyr)
+url <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/police-killings/police_killings.csv"
+police_killings <- read_csv(url)
+```
+
+
+```{r, include = FALSE}
+#This next chunk is to concatenate the all of the date fields to have a new variable called 'date'.
+```
+
+```{r, include = FALSE}
+library(tidyverse)
+library(lubridate)
+police_killings$date <- paste(police_killings$year, police_killings$month, police_killings$day, sep="-") %>% ymd() %>% as.Date()
+```
+
+```{r, include = FALSE}
+#This next chunk is to call the libraries needed to create the first plot, a bar graph of the number of killings by month. We are excluding June data because only a few days of June is included so the count is deceivingly low.
+```
+
+```{r, include = FALSE}
+library(ggplot2)
+```
+This is a bar chart that shows the number of police killings by month to start 2015. Although there are some records that fall in June, I decided not to include the June data since the full month's data had not been collected which makes the count look much lower than all of the other months. This chart shows us that the most incidents happened in the month of March, followed by April. March was the only month will over 100 incidents of police killings in the United States.
+
+```{r, echo = FALSE}
+#We will be excluding June data from this visualization since the entire month of data was not collected.
+months <- c("January", "February", "March", "April", "May")
+ggplot(data = police_killings) +
+  stat_count(mapping = aes(x = month)) +
+  scale_x_discrete(limits = months) +
+  ylim(0, 125) +
+  ggtitle("Number of Police Killings by Month (Jan-May 2015)")
+```
+
+```{r, include = FALSE}
+#The next visualization I will create will show the relationship between the median household income at the tract level and the unemployment rate at the tract level.
+```
+
+This is a scatter plot that shows the relationship between median household income at the tract level and the unemployment rate at the tract level. From this plot we see that there is a negative relationship between unemployment rate and average household income. That is, as the average household income for a tract increases, the unemployment rate for that tract generally decreases. This is exactly what we would expect, though, because household income is usually heavily influenced by employment income, and thus those households with unemployed adults would be much lower than those of individuals who are employed.
+
+```{r, echo = FALSE}
+library(scales)
+ggplot(police_killings, aes(x=h_income, y=urate)) + geom_point() + scale_x_continuous(labels = label_number(suffix = " K", scale = 1e-3))
+```
